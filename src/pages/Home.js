@@ -15,7 +15,7 @@ import {
 import StarIcon from "@mui/icons-material/Star";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 let offset = 0;
 
@@ -139,8 +139,8 @@ function Home() {
                         </CardContent>
                         <CardActions>
                           <Button size="small">+ CART</Button>
-                          <Button href={`/products/${product.id}`} size="small">
-                            VIEW
+                          <Button size="small">
+                            <Link to={`/products/${product.id}`}>VIEW</Link>
                           </Button>
                         </CardActions>
                       </Box>
