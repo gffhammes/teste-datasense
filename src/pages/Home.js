@@ -12,27 +12,44 @@ import {
   ThemeProvider,
   CircularProgress,
   Rating,
+  TextField,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, Outlet } from "react-router-dom";
+import Products from "../components/Products";
 
 let offset;
-
-const truncate = (input, reqLength) =>
-  input.length > reqLength ? `${input.substring(0, reqLength)}...` : input;
 
 function Home() {
   const [allProducts, setAllProducts] = useState([]);
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const [values, setValues] = useState({
+    searchBox: "",
+    minPrice: "",
+    maxPrice: "",
+  });
+
+  const handleChange = (prop) => (event) => {
+    setValues({ ...values, [prop]: event.target.value });
+  };
+  
+  console.log(values);
 
   useEffect(() => {
-    fetchProducts();
     offset = 0;
+    fetchProducts();
   }, []);
 
   useEffect(() => {
     loadMoreProducts();
+    console.log(allProducts);
   }, [allProducts]);
 
   const fetchProducts = () => {
@@ -55,15 +72,18 @@ function Home() {
     offset += 4;
   };
 
+  const handleFilterChange = (e) => {};
+
   const theme = createTheme();
 
   theme.typography.h1 = {
     fontSize: "2.5rem",
+    fontWeight: "normal",
     "@media (min-width:600px)": {
-      fontSize: "3.5rem",
+      fontSize: "3rem",
     },
     [theme.breakpoints.up("md")]: {
-      fontSize: "5rem",
+      fontSize: "3.5rem",
     },
   };
 
@@ -75,78 +95,79 @@ function Home() {
           height: "100%",
         }}
       >
-        <Container>
-          <Typography variant="h1">Products List</Typography>
-          <Typography>
-            {products.length}/{allProducts.length} products
-          </Typography>
-          <Grid container spacing={2}>
-            {products &&
-              products.map((product) => {
-                return (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-                    <Card
-                      sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Box sx={{ padding: "1rem" }}>
-                        <CardMedia
-                          component="img"
-                          height="240"
-                          image={product.image}
-                          alt={product.title}
-                          sx={{ objectFit: "contain" }}
-                        />
-                      </Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          flexDirection: "column",
-                          height: "100%",
-                        }}
-                      >
-                        <CardContent>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              color: "#8d8d8d",
-                              marginBottom: "1rem",
-                            }}
-                          >
-                            <Rating
-                              name="read-only"
-                              value={product.rating.rate}
-                              precision={0.5}
-                              readOnly
-                            />
-                            <Typography variant="h5" component="div">
-                              ${product.price}
-                            </Typography>
-                          </Box>
-                          <Typography variant="h5" component="div">
-                            {truncate(product.title, 50)}
-                          </Typography>
-                        </CardContent>
-                        <CardActions>
-                          <Button size="small">+ CART</Button>
-                          <Button size="small">
-                            <Link to={`/products/${product.id}`}>VIEW</Link>
-                          </Button>
-                        </CardActions>
-                      </Box>
-                    </Card>
-                  </Grid>
-                );
-              })}
-          </Grid>
-          <Outlet />
-          {products.length == 0 && <CircularProgress />}
+        <Box
+          sx={{
+            backgroundColor: "#f4f4f4",
+            borderBottom: "1px solid #d5d5d5",
+            width: "100%",
+            position: "fixed",
+            zIndex: "999",
+            paddingTop: "1rem",
+            paddingBottom: "1rem",
+          }}
+        >
+          <Container>
+            <Typography variant="h1">Products List</Typography>
+            <Typography>
+              {products.length}/{allProducts.length} products
+            </Typography>
+          </Container>
+        </Box>
+
+        <Container sx={{ paddingTop: "10rem", paddingBottom: "5rem" }}>
+          <Box
+            sx={{
+              width: "100%",
+              marginBottom: "1rem",
+              display: "grid",
+              gap: "1rem",
+              gridTemplateAreas: `"a a"
+              "b c"`,
+            }}
+          >
+            <TextField
+              sx={{ width: "100%", gridArea: "a" }}
+              label="Search"
+              variant="outlined"
+              value={values.searchBox}
+              onChange={handleChange("searchBox")}
+            />
+            <FormControl sx={{ gridArea: "b" }}>
+              <InputLabel htmlFor="outlined-adornment">Min price</InputLabel>
+              <OutlinedInput
+                id="min-price"
+                value={values.minPrice}
+                onChange={handleChange("minPrice")}
+                startAdornment={
+                  <InputAdornment position="start">$</InputAdornment>
+                }
+                label="Min price"
+              />
+            </FormControl>
+            <FormControl sx={{ gridArea: "c" }}>
+              <InputLabel htmlFor="outlined-adornment">Max price</InputLabel>
+              <OutlinedInput
+                id="max-price"
+                value={values.maxPrice}
+                onChange={handleChange("maxPrice")}
+                startAdornment={
+                  <InputAdornment position="start">$</InputAdornment>
+                }
+                label="Max price"
+              />
+            </FormControl>
+          </Box>
+
+          <Products products={products} />
+
+          {products.length == 0 && (
+            <Box
+              sx={{ display: "grid", placeContent: "center", height: "20rem" }}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+
           {products.length < allProducts.length && (
             <Button
               variant="contained"
@@ -154,6 +175,7 @@ function Home() {
               onClick={() => {
                 loadMoreProducts();
               }}
+              sx={{ marginTop: "2rem" }}
             >
               More
             </Button>
