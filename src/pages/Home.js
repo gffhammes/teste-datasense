@@ -29,28 +29,17 @@ function Home() {
   const [allProducts, setAllProducts] = useState([]);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-
   const [values, setValues] = useState({
     searchBox: "",
     minPrice: "",
     maxPrice: "",
   });
 
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
-  };
-  
-  console.log(values);
-
+  //fetch data
   useEffect(() => {
     offset = 0;
     fetchProducts();
   }, []);
-
-  useEffect(() => {
-    loadMoreProducts();
-    console.log(allProducts);
-  }, [allProducts]);
 
   const fetchProducts = () => {
     return axios.get("https://fakestoreapi.com/products").then((res) => {
@@ -58,21 +47,71 @@ function Home() {
     });
   };
 
-  const loadMoreProducts = () => {
-    if (allProducts.length == 0) return null;
-
-    const newProducts = [];
-
-    allProducts.slice(offset, offset + 4).forEach((product) => {
-      newProducts.push(product);
-    });
-
-    setProducts((oldProducts) => [...oldProducts, ...newProducts]);
-
-    offset += 4;
+  const handleChange = (prop) => (event) => {
+    setValues({ ...values, [prop]: event.target.value });
   };
 
-  const handleFilterChange = (e) => {};
+  useEffect(() => {
+    offset = 0;
+    if (values.searchBox == "") {
+      loadMoreProducts(allProducts);
+    } else {
+      loadMoreProducts(filteredProducts);
+    }
+  }, [allProducts]);
+
+  const handleLoadMoreProducts = () => {
+    if (values.searchBox == "") {
+      loadMoreProducts(allProducts);
+    } else {
+      loadMoreProducts(filteredProducts);
+    }
+  };
+
+  useEffect(() => {
+    handleFilterChange();
+  }, [values]);
+
+  useEffect(() => {
+    offset = 0;
+    if (values.searchBox != "" && filteredProducts.length == 0) {
+      return null;
+    }
+
+    if (
+      values.searchBox == "" ||
+      filteredProducts.length == allProducts.length
+    ) {
+      loadMoreProducts(allProducts);
+    } else {
+      loadMoreProducts(filteredProducts);
+    }
+  }, [filteredProducts]);
+
+  const handleFilterChange = () => {
+    setFilteredProducts(
+      allProducts.filter((product) => {
+        if (
+          product.title.toLowerCase().includes(values.searchBox.toLowerCase())
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+    );
+  };
+
+  const loadMoreProducts = (products) => {
+    console.log(products);
+    if (products.length == 0) return null;
+    const newProducts = [];
+    products.slice(0, offset + 4).forEach((product) => {
+      newProducts.push(product);
+    });
+    setProducts(newProducts);
+    offset += 4;
+  };
 
   const theme = createTheme();
 
@@ -109,7 +148,13 @@ function Home() {
           <Container>
             <Typography variant="h1">Products List</Typography>
             <Typography>
-              {products.length}/{allProducts.length} products
+              {values.searchBox == "" || filteredProducts.length > 0
+                ? `${products.length}/${
+                    filteredProducts.length == 0
+                      ? allProducts.length
+                      : filteredProducts.length
+                  } product(s)`
+                : "0 product"}
             </Typography>
           </Container>
         </Box>
@@ -158,7 +203,14 @@ function Home() {
             </FormControl>
           </Box>
 
-          <Products products={products} />
+          {values.searchBox == "" || filteredProducts.length > 0 ? (
+            <Products products={products} />
+          ) : (
+            <Box>
+              {" "}
+              <Typography>No items</Typography>{" "}
+            </Box>
+          )}
 
           {products.length == 0 && (
             <Box
@@ -168,18 +220,33 @@ function Home() {
             </Box>
           )}
 
-          {products.length < allProducts.length && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                loadMoreProducts();
-              }}
-              sx={{ marginTop: "2rem" }}
-            >
-              More
-            </Button>
-          )}
+          {values.searchBox == ""
+            ? filteredProducts.length > 0 &&
+              products.length < allProducts.length && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    handleLoadMoreProducts();
+                  }}
+                  sx={{ marginTop: "2rem" }}
+                >
+                  More
+                </Button>
+              )
+            : filteredProducts.length > 0 &&
+              products.length < filteredProducts.length && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    handleLoadMoreProducts();
+                  }}
+                  sx={{ marginTop: "2rem" }}
+                >
+                  More
+                </Button>
+              )}
         </Container>
       </Box>
     </ThemeProvider>
