@@ -11,13 +11,13 @@ import {
   createTheme,
   ThemeProvider,
   CircularProgress,
+  Rating,
 } from "@mui/material";
-import StarIcon from "@mui/icons-material/Star";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, Outlet } from "react-router-dom";
 
-let offset = 0;
+let offset;
 
 const truncate = (input, reqLength) =>
   input.length > reqLength ? `${input.substring(0, reqLength)}...` : input;
@@ -28,6 +28,7 @@ function Home() {
 
   useEffect(() => {
     fetchProducts();
+    offset = 0;
   }, []);
 
   useEffect(() => {
@@ -35,7 +36,7 @@ function Home() {
   }, [allProducts]);
 
   const fetchProducts = () => {
-    const data = axios.get("https://fakestoreapi.com/products").then((res) => {
+    return axios.get("https://fakestoreapi.com/products").then((res) => {
       setAllProducts(res.data);
     });
   };
@@ -118,17 +119,12 @@ function Home() {
                               marginBottom: "1rem",
                             }}
                           >
-                            <Typography
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                              }}
-                              variant="h5"
-                              component="div"
-                            >
-                              <StarIcon sx={{ marginRight: ".25rem" }} />
-                              {product.rating.rate}
-                            </Typography>
+                            <Rating
+                              name="read-only"
+                              value={product.rating.rate}
+                              precision={0.5}
+                              readOnly
+                            />
                             <Typography variant="h5" component="div">
                               ${product.price}
                             </Typography>
