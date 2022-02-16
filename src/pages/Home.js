@@ -53,7 +53,11 @@ function Home() {
 
   useEffect(() => {
     offset = 0;
-    if (values.searchBox == "") {
+    if (
+      values.searchBox === "" &&
+      values.minPrice === "" &&
+      values.maxPrice === ""
+    ) {
       loadMoreProducts(allProducts);
     } else {
       loadMoreProducts(filteredProducts);
@@ -61,7 +65,11 @@ function Home() {
   }, [allProducts]);
 
   const handleLoadMoreProducts = () => {
-    if (values.searchBox == "") {
+    if (
+      values.searchBox === "" &&
+      values.minPrice === "" &&
+      values.maxPrice === ""
+    ) {
       loadMoreProducts(allProducts);
     } else {
       loadMoreProducts(filteredProducts);
@@ -74,13 +82,20 @@ function Home() {
 
   useEffect(() => {
     offset = 0;
-    if (values.searchBox != "" && filteredProducts.length == 0) {
+    if (
+      values.searchBox === "" &&
+      values.minPrice === "" &&
+      values.maxPrice === "" &&
+      filteredProducts.length == 0
+    ) {
       return null;
     }
 
     if (
-      values.searchBox == "" ||
-      filteredProducts.length == allProducts.length
+      values.searchBox === "" &&
+      values.minPrice === "" &&
+      values.maxPrice === "" &&
+      filteredProducts.length === allProducts.length
     ) {
       loadMoreProducts(allProducts);
     } else {
@@ -88,11 +103,19 @@ function Home() {
     }
   }, [filteredProducts]);
 
+  console.log(filteredProducts);
+
   const handleFilterChange = () => {
     setFilteredProducts(
       allProducts.filter((product) => {
         if (
-          product.title.toLowerCase().includes(values.searchBox.toLowerCase())
+          (values.searchBox !== ""
+            ? product.title
+                .toLowerCase()
+                .includes(values.searchBox.toLowerCase())
+            : true) &&
+          (values.minPrice !== "" ? product.price >= values.minPrice : true) &&
+          (values.maxPrice !== "" ? product.price <= values.maxPrice : true)
         ) {
           return true;
         } else {
@@ -145,7 +168,13 @@ function Home() {
             paddingBottom: "1rem",
           }}
         >
-          <Container>
+          <Container
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <Typography variant="h1">Products List</Typography>
             <Typography>
               {values.searchBox == "" || filteredProducts.length > 0
@@ -220,9 +249,10 @@ function Home() {
             </Box>
           )}
 
-          {values.searchBox == ""
-            ? filteredProducts.length > 0 &&
-              products.length < allProducts.length && (
+          {values.searchBox === "" &&
+          values.minPrice === "" &&
+          values.maxPrice === ""
+            ? products.length < allProducts.length && (
                 <Button
                   variant="contained"
                   color="primary"
