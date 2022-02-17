@@ -24,10 +24,8 @@ import CartIconMobile from "../../components/CartIconMobile";
 
 function ProductId(props) {
   let params = useParams();
-
   const { saveItem, allProducts, getProductById, isLoading, handleCartClick } =
     useContext(ApiContext);
-
   const [product, setProduct] = useState();
 
   useEffect(() => {
@@ -61,11 +59,25 @@ function ProductId(props) {
   };
 
   return (
-    <>
-      <Helmet>
-        <title>{product !== undefined ? product.title : "Not found"}</title>
-      </Helmet>
-      <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
+      <Box
+        className="product"
+        sx={{
+          height: "100%",
+          display: "grid",
+          gridTemplateRows: "min-content auto",
+          overflowY: "hidden",
+        }}
+      >
+        <Helmet>
+          <title>
+            {product !== undefined
+              ? product.title
+              : isLoading
+              ? "Loading..."
+              : "Not found"}
+          </title>
+        </Helmet>
         <Box
           component={"header"}
           sx={{
@@ -90,176 +102,199 @@ function ProductId(props) {
           </Container>
         </Box>
         {product !== undefined ? (
-          <Box>
-            <Container sx={{ height: "100%", overflowY: "hidden" }}>
-              <Card
+          <Box
+            sx={{
+              height: "100%",
+              overflow: "scroll",
+            }}
+          >
+            <Box
+              sx={{
+                height: "100%",
+                overflow: "auto",
+              }}
+            >
+              <Container
                 sx={{
-                  height: "100%",
-                  display: "flex",
+                  paddingTop: "2rem",
+                  paddingBottom: "2rem",
                 }}
               >
-                <Grid
-                  container
-                  spacing={2}
-                  sx={{ padding: "1rem", alignItems: "center" }}
+                <Card
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    overflow: "auto",
+                  }}
                 >
                   <Grid
-                    item
-                    xs={12}
-                    md={12}
-                    lg={4}
-                    xl={6}
-                    sx={{ height: "fit-content" }}
+                    container
+                    spacing={2}
+                    sx={{ padding: "1rem", alignItems: "center" }}
                   >
-                    <Box
-                      component="img"
-                      src={product.image}
-                      alt={product.title}
-                      sx={{
-                        padding: "2rem",
-                        objectFit: "contain",
-                        width: "100%",
-                        maxHeight: { xs: "20rem", md: "40rem" },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={8} lg={6}>
-                    <CardContent sx={{ display: "grid", rowGap: "2rem" }}>
-                      <Typography
-                        variant="h1"
-                        sx={{ textAlign: { xs: "center", sm: "left" } }}
-                      >
-                        {product.title}
-                      </Typography>
+                    <Grid
+                      item
+                      xs={12}
+                      md={12}
+                      lg={4}
+                      xl={6}
+                      sx={{ height: "fit-content" }}
+                    >
                       <Box
+                        component="img"
+                        src={product.image}
+                        alt={product.title}
                         sx={{
+                          padding: "2rem",
+                          objectFit: "contain",
                           width: "100%",
-                          display: "grid",
-                          alignItems: "center",
-                          justifyContent: {
-                            xs: "center",
-                            sm: "space-between",
-                          },
-                          gridTemplateAreas: {
-                            xs: `"a"
-                  "b"
-                  "c"`,
-                            sm: `"a c"
-                  "b c"`,
-                          },
-                          gap: { xs: "1.5rem", sm: "1rem" },
+                          maxHeight: { xs: "20rem", lg: "40rem" },
                         }}
-                      >
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={8} xl={6}>
+                      <CardContent sx={{ display: "grid", rowGap: "2rem" }}>
+                        <Typography
+                          variant="h1"
+                          sx={{ textAlign: { xs: "center", sm: "left" } }}
+                        >
+                          {product.title}
+                        </Typography>
                         <Box
                           sx={{
-                            display: "flex",
+                            width: "100%",
+                            display: "grid",
                             alignItems: "center",
-                            gridArea: "a",
+                            justifyContent: {
+                              xs: "center",
+                              sm: "space-between",
+                            },
+                            gridTemplateAreas: {
+                              xs: `"a"
+                  "b"
+                  "c"`,
+                              sm: `"a c"
+                  "b c"`,
+                            },
+                            gap: { xs: "1.5rem", sm: "1rem" },
                           }}
                         >
-                          <Typography variant="h5" sx={{}}>
-                            {product.rating.rate}
-                          </Typography>
-                          <Rating
-                            name="read-only"
-                            value={product.rating.rate}
-                            precision={0.1}
-                            size="large"
-                            sx={{ margin: "0 1rem 0 .5rem" }}
-                            readOnly
-                          />
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gridArea: "a",
+                            }}
+                          >
+                            <Typography variant="h5" sx={{}}>
+                              {product.rating.rate}
+                            </Typography>
+                            <Rating
+                              name="read-only"
+                              value={product.rating.rate}
+                              precision={0.1}
+                              size="large"
+                              sx={{ margin: "0 1rem 0 .5rem" }}
+                              readOnly
+                            />
+                            <Typography
+                              variant="span"
+                              sx={{
+                                padding: ".25rem .5rem",
+                                borderRadius: ".5rem",
+                                backgroundColor: "#d8d8d8",
+                              }}
+                            >
+                              {product.rating.count}
+                            </Typography>
+                          </Box>
                           <Typography
                             variant="span"
                             sx={{
                               padding: ".25rem .5rem",
                               borderRadius: ".5rem",
-                              backgroundColor: "#d8d8d8",
+                              border: "1px solid #adadad",
+                              color: "#adadad",
+                              whiteSpace: "nowrap",
+                              gridArea: "b",
+                              width: "fit-content",
+                              justifySelf: { xs: "center", sm: "start" },
                             }}
                           >
-                            {product.rating.count}
+                            {product.category.toUpperCase()}
                           </Typography>
-                        </Box>
-                        <Typography
-                          variant="span"
-                          sx={{
-                            padding: ".25rem .5rem",
-                            borderRadius: ".5rem",
-                            border: "1px solid #adadad",
-                            color: "#adadad",
-                            whiteSpace: "nowrap",
-                            gridArea: "b",
-                            width: "fit-content",
-                            justifySelf: { xs: "center", sm: "start" },
-                          }}
-                        >
-                          {product.category.toUpperCase()}
-                        </Typography>
-                        <Box
-                          sx={{
-                            justifySelf: "center",
-                            display: "flex",
-                            gridArea: "c",
-                          }}
-                        >
-                          <Typography variant="h3" sx={{ fontSize: "1.5rem" }}>
-                            $
-                          </Typography>
-                          <Typography
-                            variant="h3"
+                          <Box
                             sx={{
-                              lineHeight: "1",
+                              justifySelf: "center",
+                              display: "flex",
+                              gridArea: "c",
                             }}
                           >
-                            {product.price}
-                          </Typography>
+                            <Typography
+                              variant="h3"
+                              sx={{ fontSize: "1.5rem" }}
+                            >
+                              $
+                            </Typography>
+                            <Typography
+                              variant="h3"
+                              sx={{
+                                lineHeight: "1",
+                              }}
+                            >
+                              {product.price}
+                            </Typography>
+                          </Box>
                         </Box>
-                      </Box>
-                      <Typography variant="span">
-                        {product.description}
-                      </Typography>
-                      <Box>
-                        <Button
-                          variant="contained"
-                          onClick={() => {
-                            saveItem(product);
-                          }}
-                        >
-                          + Cart
-                        </Button>
-                      </Box>
-                    </CardContent>
+                        <Typography variant="span">
+                          {product.description}
+                        </Typography>
+                        <Box>
+                          <Button
+                            variant="contained"
+                            onClick={() => {
+                              saveItem(product);
+                            }}
+                          >
+                            + Cart
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Card>
-            </Container>
+                </Card>
+              </Container>
+            </Box>
           </Box>
         ) : (
-          <Container
-            sx={{
-              height: "100%",
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            className="not-found"
-          >
-            Not found
-          </Container>
+          !isLoading && (
+            <Container
+              sx={{
+                height: "100%",
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              className="not-found"
+            >
+              Not found
+            </Container>
+          )
         )}
-      </ThemeProvider>
-      {isLoading && (
-        <Box
-          sx={{
-            display: "grid",
-            placeContent: "center",
-            height: "20rem",
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
-    </>
+        {isLoading && (
+          <Box
+            sx={{
+              display: "grid",
+              placeContent: "center",
+              height: "20rem",
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
+      </Box>
+    </ThemeProvider>
   );
 }
 

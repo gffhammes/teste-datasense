@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Button,
   Typography,
@@ -24,6 +24,7 @@ import { ApiContext } from "../contexts/ApiContext";
 import CartItem from "./CartItem";
 import CloseIcon from "@mui/icons-material/Close";
 import useWindowDimensions from "../hooks/useWindowDimensions";
+import axios from "axios";
 
 function Cart({}) {
   const { width } = useWindowDimensions();
@@ -45,6 +46,44 @@ function Cart({}) {
       pricesSum += itemTotalPrice;
     });
     return pricesSum.toFixed(2);
+  };
+
+  const [cartId, setCartId] = useState("");
+
+  useEffect(() => {
+    cartId && alert(`Checkout done successfully! Your cart id is ${cartId}`);
+    setCartId(null);
+  }, [cartId]);
+
+  const checkout = () => {
+    if (cartItems.length === 0) {
+      alert("Your cart is empty");
+      return null;
+    }
+
+    const productsArray = [];
+
+    cartItems.map((cartItem) => {
+      const cartItemObj = {
+        productId: cartItem.id,
+        quantity: parseInt(cartItem.qty),
+      };
+      productsArray.push(cartItemObj);
+    });
+
+    const cart = JSON.stringify({
+      userId: 5,
+      date: Date.now(),
+      products: productsArray,
+    });
+    axios
+      .post("https://fakestoreapi.com/carts", cart)
+      .then(
+        (response) =>
+          setCartId(response.data.id) /*setCheckoutId(response.data.id)*/
+      );
+
+    clearCart();
   };
 
   return (
@@ -138,7 +177,9 @@ function Cart({}) {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h6">{cartItems.length} {cartItems.length > 1 ? "items" : "item"}</Typography>
+          <Typography variant="h6">
+            {cartItems.length} {cartItems.length > 1 ? "items" : "item"}
+          </Typography>
           <Typography variant="h6">${totalPrice()}</Typography>
         </Box>
         <hr />
@@ -153,7 +194,14 @@ function Cart({}) {
           <Button color="secondary" onClick={clearCart}>
             Clear
           </Button>
-          <Button variant="contained">Checkout</Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              checkout();
+            }}
+          >
+            Checkout
+          </Button>
         </Box>
       </Box>
     </Box>

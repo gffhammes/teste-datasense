@@ -1,8 +1,10 @@
 import React, { useContext } from "react";
 import { Typography, Container, Box, Button, IconButton } from "@mui/material";
 import CartIconMobile from "./CartIconMobile";
+import useWindowDimensions from "../hooks/useWindowDimensions";
 
 function Header({ productsShown, productsQty }) {
+  const { width } = useWindowDimensions();
   return (
     <Box
       component={"header"}
@@ -38,9 +40,11 @@ function Header({ productsShown, productsQty }) {
             ? `${productsShown}/${productsQty} products`
             : "0 product"}
         </Typography>
-        <Box sx={{ gridArea: "c" }}>
-          <CartIconMobile />
-        </Box>
+        {width < 960 && (
+          <Box sx={{ gridArea: "c" }}>
+            <CartIconMobile />
+          </Box>
+        )}
       </Container>
     </Box>
   );
