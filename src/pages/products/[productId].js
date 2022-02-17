@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Box,
@@ -14,9 +14,12 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
+import { ApiContext } from "../../contexts/ApiContext";
 
 function ProductId(props) {
   let params = useParams();
+
+  const { saveItem } = useContext(ApiContext);
 
   const [product, setProduct] = useState();
 
@@ -162,7 +165,14 @@ function ProductId(props) {
                 </Box>
                 <Typography variant="span">{product.description}</Typography>
                 <Box>
-                  <Button variant="contained">+ Cart</Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      saveItem(product);
+                    }}
+                  >
+                    + Cart
+                  </Button>
                 </Box>
               </CardContent>
             </Grid>

@@ -19,18 +19,19 @@ import {
   OutlinedInput,
   InputAdornment,
 } from "@mui/material";
-import { CartContext } from "../contexts/CartContext";
+import { ApiContext } from "../contexts/ApiContext";
 import CartItem from "./CartItem";
 
 function Cart({}) {
-  const { cartItems } = useContext(CartContext);
+  const { cartItems, allProducts, clearCart, removeItem } =
+    useContext(ApiContext);
 
   return (
     <Box
+      className="cart"
       sx={{
-        position: "fixed",
         height: "100%",
-        width: "20rem",
+        width: "100%",
         bottom: "0",
         right: "0",
         padding: "2rem",
@@ -40,9 +41,29 @@ function Cart({}) {
       }}
     >
       <Typography variant="h4">Cart</Typography>
-      {cartItems.map((cartItem) => {
-        return <CartItem cartItem={cartItem} key={cartItem.id} />;
-      })}
+      <Box sx={{ display: "grid", rowGap: ".5rem" }}>
+        {cartItems.length > 0 ? (
+          cartItems.map((cartItem) => {
+            return (
+              <CartItem
+                removeItem={removeItem}
+                cartItem={cartItem}
+                key={cartItem.id}
+                product={allProducts.filter((product) => {
+                  if (product.id === cartItem.id) {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                })}
+              />
+            );
+          })
+        ) : (
+          <Typography variant="span">No items</Typography>
+        )}
+      </Box>
+      <Button onClick={clearCart}>Clear</Button>
     </Box>
   );
 }

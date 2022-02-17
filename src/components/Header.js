@@ -5,11 +5,12 @@ function Header({ productsShown, productsQty }) {
   return (
     <Box
       component={"header"}
+      className="header"
       sx={{
         backgroundColor: "#1976d2",
         color: "#fff",
         borderBottom: "1px solid #d5d5d5",
-        width: "calc(100% - 20rem)",
+        width: "calc(100% - 25rem)",
         position: "fixed",
         zIndex: "999",
         paddingTop: "1rem",

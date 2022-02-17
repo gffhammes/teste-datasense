@@ -23,12 +23,13 @@ import axios from "axios";
 import { Link, Outlet } from "react-router-dom";
 import Products from "../components/Products";
 import Header from "../components/Header";
-import { CartContext } from "../contexts/CartContext";
+import { ApiContext } from "../contexts/ApiContext";
 
 let offset;
 
 function Home() {
-  const [allProducts, setAllProducts] = useState([]);
+  const { allProducts, isLoading } = useContext(ApiContext);
+  // const [allProducts, setAllProducts] = useState([]);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [values, setValues] = useState({
@@ -39,14 +40,14 @@ function Home() {
 
   useEffect(() => {
     offset = 0;
-    fetchProducts();
+    // fetchProducts();
   }, []);
 
-  const fetchProducts = () => {
-    return axios.get("https://fakestoreapi.com/products").then((res) => {
-      setAllProducts(res.data);
-    });
-  };
+  // const fetchProducts = () => {
+  //   return axios.get("https://fakestoreapi.com/products").then((res) => {
+  //     setAllProducts(res.data);
+  //   });
+  // };
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -149,15 +150,15 @@ function Home() {
     },
   };
 
-  const { saveItem } = useContext(CartContext);
+  const { saveItem } = useContext(ApiContext);
 
   return (
     <ThemeProvider theme={theme}>
       <Box
-        className="App"
+        className="products"
         sx={{
           height: "100%",
-          width: "calc(100% - 20rem)",
+          width: "100%",
         }}
       >
         <Header
@@ -223,7 +224,7 @@ function Home() {
             </Box>
           )}
 
-          {products.length == 0 && (
+          {isLoading && (
             <Box
               sx={{ display: "grid", placeContent: "center", height: "20rem" }}
             >
