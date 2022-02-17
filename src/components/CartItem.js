@@ -17,7 +17,9 @@ const truncate = (input, reqLength) =>
 function CartItem({ cartItem, product, removeItem }) {
   product = product[0];
   return (
-    <Card sx={{ display: "grid", gridTemplateColumns: "1fr 2fr" }}>
+    <Card
+      sx={{ display: "grid", width: "100%", gridTemplateColumns: "1fr 2fr" }}
+    >
       <Box sx={{ padding: "1rem", height: "9rem" }}>
         <CardMedia
           component="img"

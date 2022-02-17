@@ -18,17 +18,38 @@ import {
   InputLabel,
   OutlinedInput,
   InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { ApiContext } from "../contexts/ApiContext";
 import CartItem from "./CartItem";
+import CloseIcon from "@mui/icons-material/Close";
+import useWindowDimensions from "../hooks/useWindowDimensions";
 
 function Cart({}) {
-  const { cartItems, allProducts, clearCart, removeItem } =
-    useContext(ApiContext);
+  const { width } = useWindowDimensions();
+  const {
+    cartItems,
+    allProducts,
+    clearCart,
+    removeItem,
+    cartOpen,
+    handleCartClick,
+    getProductById,
+  } = useContext(ApiContext);
+
+  const totalPrice = () => {
+    let pricesSum = 0;
+    cartItems.map((cartItem) => {
+      const itemTotalPrice =
+        getProductById(cartItem.id)[0].price * cartItem.qty;
+      pricesSum += itemTotalPrice;
+    });
+    return pricesSum.toFixed(2);
+  };
 
   return (
     <Box
-      className="cart"
+      className={`cart ${cartOpen && width < 960 ? "open" : ""}`}
       sx={{
         height: "100%",
         width: "100%",
@@ -38,32 +59,101 @@ function Cart({}) {
         backgroundColor: "#115293",
         color: "#fff",
         zIndex: "1000",
+        display: "grid",
+        gridTemplateRows: "min-content auto min-content",
+        rowGap: "2rem",
+        overflow: "hidden",
       }}
     >
-      <Typography variant="h4">Cart</Typography>
-      <Box sx={{ display: "grid", rowGap: ".5rem" }}>
-        {cartItems.length > 0 ? (
-          cartItems.map((cartItem) => {
-            return (
-              <CartItem
-                removeItem={removeItem}
-                cartItem={cartItem}
-                key={cartItem.id}
-                product={allProducts.filter((product) => {
-                  if (product.id === cartItem.id) {
-                    return true;
-                  } else {
-                    return false;
-                  }
-                })}
-              />
-            );
-          })
-        ) : (
-          <Typography variant="span">No items</Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography variant="h4">Cart</Typography>
+        {width < 960 && (
+          <IconButton
+            onClick={() => {
+              handleCartClick();
+            }}
+            color="secondary"
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
         )}
       </Box>
-      <Button onClick={clearCart}>Clear</Button>
+
+      <Box
+        sx={{
+          height: "100%",
+          overflowY: "auto",
+        }}
+      >
+        <Box
+          sx={{
+            display: "grid",
+            rowGap: ".5rem",
+            justifyItems: "center",
+          }}
+        >
+          {cartItems.length > 0 ? (
+            cartItems.map((cartItem) => {
+              return (
+                <CartItem
+                  removeItem={removeItem}
+                  cartItem={cartItem}
+                  key={cartItem.id}
+                  product={getProductById(cartItem.id)}
+                />
+              );
+            })
+          ) : (
+            <Box
+              sx={{
+                background:
+                  "linear-gradient(135deg,rgba(255, 255, 255,.2),rgba(255, 255, 255,.1))",
+                color: "#fff",
+                width: "100%",
+                height: "6rem",
+                borderRadius: ".25rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography variant="span">Empty</Typography>
+            </Box>
+          )}
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          display: "grid",
+          rowGap: "2rem",
+        }}
+      >
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateAreas: `"a b"`,
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography variant="h6">{cartItems.length} items</Typography>
+          <Typography variant="h6">${totalPrice()}</Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: `1fr 1fr`,
+            columnGap: "1rem",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button color="secondary" onClick={clearCart}>
+            Clear
+          </Button>
+          <Button variant="contained">Checkout</Button>
+        </Box>
+      </Box>
     </Box>
   );
 }

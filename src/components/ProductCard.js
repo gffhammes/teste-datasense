@@ -10,6 +10,8 @@ import {
   Grid,
   Box,
   Rating,
+  createTheme,
+  ThemeProvider,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -18,7 +20,7 @@ const truncate = (input, reqLength) =>
 
 function ProductCard({ product, saveItem }) {
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3}>
+    <Grid item xs={12} sm={6} md={12} im={6} lg={4} xl={3}>
       <Card
         sx={{
           height: "100%",

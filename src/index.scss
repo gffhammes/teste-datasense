@@ -33,14 +33,59 @@ a {
 .App {
   display: grid;
   grid-template-areas: "a b";
-  grid-template-columns: auto 25rem;
+  grid-template-columns: 100% min(25rem, 100%);
+  overflow: hidden;
   height: 100%;
 
   .content {
-    overflow-y: scroll;
+    height: 100%;
+    overflow-y: hidden;
+
+    .products {
+      height: 100%;
+      display: grid;
+      grid-template-areas:
+        "a"
+        "b";
+      grid-template-rows: min-content auto;
+      // overflow-y: scroll;
+
+      .header {
+        grid-area: a;
+      }
+
+      .products-container {
+        grid-area: b;
+        overflow-y: overlay;
+      }
+    }
   }
 
   .cart {
-    grid-area: "b";
+    grid-area: b;
+    transition: all 0.3s ease;
+
+    &.open {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+@media screen and (min-width: 960px) {
+  .App {
+    grid-template-columns: auto 25rem;
+
+    .content {
+      .products {
+        .header {
+        }
+
+        .products-container {
+        }
+      }
+    }
+
+    .cart {
+    }
   }
 }

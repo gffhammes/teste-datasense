@@ -17,6 +17,7 @@ import {
   InputLabel,
   OutlinedInput,
   InputAdornment,
+  createMuiTheme,
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
@@ -24,6 +25,7 @@ import { Link, Outlet } from "react-router-dom";
 import Products from "../components/Products";
 import Header from "../components/Header";
 import { ApiContext } from "../contexts/ApiContext";
+import { Helmet } from "react-helmet";
 
 let offset;
 
@@ -137,38 +139,28 @@ function Home() {
     );
   };
 
-  const theme = createTheme();
-
-  theme.typography.h1 = {
-    fontSize: "2.5rem",
-    fontWeight: "normal",
-    "@media (min-width:600px)": {
-      fontSize: "3rem",
-    },
-    [theme.breakpoints.up("md")]: {
-      fontSize: "3.5rem",
-    },
-  };
-
   const { saveItem } = useContext(ApiContext);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        className="products"
-        sx={{
-          height: "100%",
-          width: "100%",
-        }}
-      >
-        <Header
-          productsShown={products.length}
-          productsQty={
-            isFilterEmpty() ? allProducts.length : filteredProducts.length
-          }
-        />
+    <Box
+      className="products"
+      sx={{
+        height: "100%",
+        width: "100%",
+      }}
+    >
+      <Helmet>
+        <title>All Products</title>
+      </Helmet>
+      <Header
+        productsShown={products.length}
+        productsQty={
+          isFilterEmpty() ? allProducts.length : filteredProducts.length
+        }
+      />
 
-        <Container sx={{ paddingTop: "10rem", paddingBottom: "5rem" }}>
+      <Box className="products-container">
+        <Container sx={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
           <Box
             sx={{
               width: "100%",
@@ -178,7 +170,9 @@ function Home() {
               gridTemplateAreas: {
                 xs: `"a a"
                 "b c"`,
+                sm: `"a b c"`,
               },
+              gridTemplateColumns: { xs: "1fr 1fr", sm: "2fr 1fr 1fr" },
             }}
           >
             <TextField
@@ -226,7 +220,11 @@ function Home() {
 
           {isLoading && (
             <Box
-              sx={{ display: "grid", placeContent: "center", height: "20rem" }}
+              sx={{
+                display: "grid",
+                placeContent: "center",
+                height: "20rem",
+              }}
             >
               <CircularProgress />
             </Box>
@@ -260,7 +258,7 @@ function Home() {
               )}
         </Container>
       </Box>
-    </ThemeProvider>
+    </Box>
   );
 }
 

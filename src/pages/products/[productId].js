@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   CardMedia,
+  CircularProgress,
   Container,
   createTheme,
   Grid,
@@ -14,26 +15,28 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
+
+import { Helmet } from "react-helmet";
 import { ApiContext } from "../../contexts/ApiContext";
 
 function ProductId(props) {
   let params = useParams();
 
-  const { saveItem } = useContext(ApiContext);
+  const { saveItem, allProducts, getProductById } = useContext(ApiContext);
 
   const [product, setProduct] = useState();
 
-  const fetchProducts = () => {
-    return axios
-      .get(`https://fakestoreapi.com/products/${params.productId}`)
-      .then((res) => {
-        setProduct(res.data);
-      });
-  };
+  useEffect(() => {
+    const thisProduct = getProductById(parseInt(params.productId));
+
+    setProduct(thisProduct);
+  }, []);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    const thisProduct = getProductById(parseInt(params.productId));
+
+    setProduct(thisProduct[0]);
+  }, [allProducts]);
 
   const theme = createTheme();
 
@@ -42,8 +45,11 @@ function ProductId(props) {
     fontWeight: "normal",
   };
 
-  return product ? (
+  return product !== undefined ? (
     <ThemeProvider theme={theme}>
+      <Helmet>
+        <title>{product.title}</title>
+      </Helmet>
       <Container sx={{ marginTop: "3rem", marginBottom: "3rem" }}>
         <Button component={Link} to="/">
           &larr; Home

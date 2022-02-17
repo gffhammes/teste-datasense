@@ -3,7 +3,38 @@ import React, { createContext, useEffect, useState } from "react";
 
 export const ApiContext = createContext();
 
-const CartProvider = ({ children }) => {
+const ContextProvider = ({ children }) => {
+  //Products fetch and management
+  const [allProducts, setAllProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchData = () => {
+    let url = "https://fakestoreapi.com/products";
+    axios
+      .get(url)
+      .then(function (response) {
+        setAllProducts(response.data);
+        setIsLoading(false);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const getProductById = (id) => {
+    
+    return allProducts.filter((product) => {
+      if (product.id === id) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  };
+
+  //Cart items management
   const [cartItems, setCartItems] = useState([]);
 
   const saveItem = (item) => {
@@ -38,20 +69,12 @@ const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
-  const [allProducts, setAllProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  //Cart open and close control
+  const [cartOpen, setCartOpen] = useState(false);
 
-  // Fetch data
-  useEffect(() => {
-    let url = "https://fakestoreapi.com/products";
-    axios
-      .get(url)
-      .then(function (response) {
-        setAllProducts(response.data);
-        setIsLoading(false);
-      })
-      .catch((error) => console.log(error));
-  }, []);
+  const handleCartClick = () => {
+    setCartOpen(!cartOpen);
+  };
 
   return (
     <ApiContext.Provider
@@ -62,6 +85,9 @@ const CartProvider = ({ children }) => {
         clearCart,
         allProducts,
         isLoading,
+        cartOpen,
+        handleCartClick,
+        getProductById,
       }}
     >
       {children}
@@ -69,4 +95,4 @@ const CartProvider = ({ children }) => {
   );
 };
 
-export default CartProvider;
+export default ContextProvider;
