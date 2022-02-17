@@ -1,19 +1,22 @@
 import Home from "./pages/Home";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ProductId from "./pages/products/[productId]";
+import Cart from "./components/Cart";
+import CartProvider from "./contexts/CartContext";
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <div className="content">
+    <CartProvider>
+      <Router>
+        <div className="App">
           <Routes>
             <Route path="/" element={<Home />} />
-              <Route path="/products/:productId" element={<ProductId />} />
+            <Route path="/products/:productId" element={<ProductId />} />
           </Routes>
+          <Cart />
         </div>
-      </div>
-    </Router>
+      </Router>
+    </CartProvider>
   );
 }
 

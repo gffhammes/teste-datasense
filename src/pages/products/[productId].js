@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Box,
+  Button,
   Card,
   CardContent,
   CardMedia,
@@ -31,10 +32,6 @@ function ProductId(props) {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    console.log(product);
-  }, [product]);
-
   const theme = createTheme();
 
   theme.typography.h1 = {
@@ -44,8 +41,10 @@ function ProductId(props) {
 
   return product ? (
     <ThemeProvider theme={theme}>
-      <Container sx={{ marginTop: "3rem" }}>
-        <Link to="/">&larr; Home</Link>
+      <Container sx={{ marginTop: "3rem", marginBottom: "3rem" }}>
+        <Button component={Link} to="/">
+          &larr; Home
+        </Button>
         <Card
           sx={{
             height: "100%",
@@ -57,42 +56,51 @@ function ProductId(props) {
             spacing={2}
             sx={{ padding: "1rem", alignItems: "center" }}
           >
-            <Grid item lg={6} sx={{ height: "fit-content" }}>
+            <Grid item xs={12} md={4} lg={6} sx={{ height: "fit-content" }}>
               <Box
                 component="img"
                 src={product.image}
                 alt={product.title}
-                sx={{ objectFit: "contain", width: "100%", maxHeight: "40rem" }}
+                sx={{
+                  padding: "2rem",
+                  objectFit: "contain",
+                  width: "100%",
+                  maxHeight: { xs: "20rem", md: "40rem" },
+                }}
               />
             </Grid>
-            <Grid item lg={6}>
+            <Grid item xs={12} md={8} lg={6}>
               <CardContent sx={{ display: "grid", rowGap: "2rem" }}>
-                <Typography variant="h1">{product.title}</Typography>
+                <Typography
+                  variant="h1"
+                  sx={{ textAlign: { xs: "center", sm: "left" } }}
+                >
+                  {product.title}
+                </Typography>
                 <Box
                   sx={{
                     width: "100%",
-                    display: "flex",
+                    display: "grid",
                     alignItems: "center",
-                    justifyContent: "space-between",
+                    justifyContent: {
+                      xs: "center",
+                      sm: "space-between",
+                    },
+                    gridTemplateAreas: {
+                      xs: `"a"
+                    "b"
+                    "c"`,
+                      sm: `"a c"
+                    "b c"`,
+                    },
+                    gap: { xs: "1.5rem", sm: "1rem" },
                   }}
                 >
-                  <Typography
-                    variant="span"
-                    sx={{
-                      padding: ".25rem .5rem",
-                      borderRadius: ".5rem",
-                      border: "1px solid #adadad",
-                      color: "#adadad",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {product.category.toUpperCase()}
-                  </Typography>
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      marginLeft: "1rem",
+                      gridArea: "a",
                     }}
                   >
                     <Typography variant="h5" sx={{}}>
@@ -117,26 +125,45 @@ function ProductId(props) {
                       {product.rating.count}
                     </Typography>
                   </Box>
-                </Box>
-                <Box
-                  sx={{
-                    justifySelf: "center",
-                    display: "flex",
-                  }}
-                >
-                  <Typography variant="h3" sx={{ fontSize: "1.5rem" }}>
-                    $
-                  </Typography>
                   <Typography
-                    variant="h3"
+                    variant="span"
                     sx={{
-                      lineHeight: "1",
+                      padding: ".25rem .5rem",
+                      borderRadius: ".5rem",
+                      border: "1px solid #adadad",
+                      color: "#adadad",
+                      whiteSpace: "nowrap",
+                      gridArea: "b",
+                      width: "fit-content",
+                      justifySelf: { xs: "center", sm: "start" },
                     }}
                   >
-                    {product.price}
+                    {product.category.toUpperCase()}
                   </Typography>
+                  <Box
+                    sx={{
+                      justifySelf: "center",
+                      display: "flex",
+                      gridArea: "c",
+                    }}
+                  >
+                    <Typography variant="h3" sx={{ fontSize: "1.5rem" }}>
+                      $
+                    </Typography>
+                    <Typography
+                      variant="h3"
+                      sx={{
+                        lineHeight: "1",
+                      }}
+                    >
+                      {product.price}
+                    </Typography>
+                  </Box>
                 </Box>
                 <Typography variant="span">{product.description}</Typography>
+                <Box>
+                  <Button variant="contained">+ Cart</Button>
+                </Box>
               </CardContent>
             </Grid>
           </Grid>

@@ -18,10 +18,12 @@ import {
   OutlinedInput,
   InputAdornment,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { Link, Outlet } from "react-router-dom";
 import Products from "../components/Products";
+import Header from "../components/Header";
+import { CartContext } from "../contexts/CartContext";
 
 let offset;
 
@@ -35,7 +37,6 @@ function Home() {
     maxPrice: "",
   });
 
-  //fetch data
   useEffect(() => {
     offset = 0;
     fetchProducts();
@@ -65,15 +66,9 @@ function Home() {
   }, [allProducts]);
 
   const handleLoadMoreProducts = () => {
-    if (
-      values.searchBox === "" &&
-      values.minPrice === "" &&
-      values.maxPrice === ""
-    ) {
-      loadMoreProducts(allProducts);
-    } else {
-      loadMoreProducts(filteredProducts);
-    }
+    isFilterEmpty()
+      ? loadMoreProducts(allProducts)
+      : loadMoreProducts(filteredProducts);
   };
 
   useEffect(() => {
@@ -103,8 +98,6 @@ function Home() {
     }
   }, [filteredProducts]);
 
-  console.log(filteredProducts);
-
   const handleFilterChange = () => {
     setFilteredProducts(
       allProducts.filter((product) => {
@@ -126,7 +119,6 @@ function Home() {
   };
 
   const loadMoreProducts = (products) => {
-    console.log(products);
     if (products.length == 0) return null;
     const newProducts = [];
     products.slice(0, offset + 4).forEach((product) => {
@@ -134,6 +126,14 @@ function Home() {
     });
     setProducts(newProducts);
     offset += 4;
+  };
+
+  const isFilterEmpty = () => {
+    return (
+      values.searchBox === "" &&
+      values.minPrice === "" &&
+      values.maxPrice === ""
+    );
   };
 
   const theme = createTheme();
@@ -149,54 +149,35 @@ function Home() {
     },
   };
 
+  const { saveItem } = useContext(CartContext);
+
   return (
     <ThemeProvider theme={theme}>
       <Box
         className="App"
         sx={{
           height: "100%",
+          width: "calc(100% - 20rem)",
         }}
       >
-        <Box
-          sx={{
-            backgroundColor: "#f4f4f4",
-            borderBottom: "1px solid #d5d5d5",
-            width: "100%",
-            position: "fixed",
-            zIndex: "999",
-            paddingTop: "1rem",
-            paddingBottom: "1rem",
-          }}
-        >
-          <Container
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Typography variant="h1">Products List</Typography>
-            <Typography>
-              {values.searchBox == "" || filteredProducts.length > 0
-                ? `${products.length}/${
-                    filteredProducts.length == 0
-                      ? allProducts.length
-                      : filteredProducts.length
-                  } product(s)`
-                : "0 product"}
-            </Typography>
-          </Container>
-        </Box>
+        <Header
+          productsShown={products.length}
+          productsQty={
+            isFilterEmpty() ? allProducts.length : filteredProducts.length
+          }
+        />
 
         <Container sx={{ paddingTop: "10rem", paddingBottom: "5rem" }}>
           <Box
             sx={{
               width: "100%",
-              marginBottom: "1rem",
+              marginBottom: "4rem",
               display: "grid",
               gap: "1rem",
-              gridTemplateAreas: `"a a"
-              "b c"`,
+              gridTemplateAreas: {
+                xs: `"a a"
+                "b c"`,
+              },
             }}
           >
             <TextField
@@ -209,6 +190,7 @@ function Home() {
             <FormControl sx={{ gridArea: "b" }}>
               <InputLabel htmlFor="outlined-adornment">Min price</InputLabel>
               <OutlinedInput
+                type="number"
                 id="min-price"
                 value={values.minPrice}
                 onChange={handleChange("minPrice")}
@@ -221,6 +203,7 @@ function Home() {
             <FormControl sx={{ gridArea: "c" }}>
               <InputLabel htmlFor="outlined-adornment">Max price</InputLabel>
               <OutlinedInput
+                type="number"
                 id="max-price"
                 value={values.maxPrice}
                 onChange={handleChange("maxPrice")}
@@ -232,12 +215,11 @@ function Home() {
             </FormControl>
           </Box>
 
-          {values.searchBox == "" || filteredProducts.length > 0 ? (
-            <Products products={products} />
+          {isFilterEmpty() || filteredProducts.length > 0 ? (
+            <Products products={products} saveItem={saveItem} />
           ) : (
             <Box>
-              {" "}
-              <Typography>No items</Typography>{" "}
+              <Typography>No items</Typography>
             </Box>
           )}
 
@@ -249,9 +231,7 @@ function Home() {
             </Box>
           )}
 
-          {values.searchBox === "" &&
-          values.minPrice === "" &&
-          values.maxPrice === ""
+          {isFilterEmpty()
             ? products.length < allProducts.length && (
                 <Button
                   variant="contained"
