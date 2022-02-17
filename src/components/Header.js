@@ -1,13 +1,8 @@
 import React, { useContext } from "react";
 import { Typography, Container, Box, Button, IconButton } from "@mui/material";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import useWindowDimensions from "../hooks/useWindowDimensions";
-import { ApiContext } from "../contexts/ApiContext";
+import CartIconMobile from "./CartIconMobile";
 
 function Header({ productsShown, productsQty }) {
-  const { width } = useWindowDimensions();
-  const { cartItems, cartOpen, handleCartClick } = useContext(ApiContext);
-
   return (
     <Box
       component={"header"}
@@ -43,31 +38,9 @@ function Header({ productsShown, productsQty }) {
             ? `${productsShown}/${productsQty} products`
             : "0 product"}
         </Typography>
-        {width < 960 && (
-          <Box sx={{ display: "flex", alignItems: "center", gridArea: "c" }}>
-            <Typography
-              sx={{
-                backgroundColor: "white",
-                color: "#1976d2",
-                width: "fit-content",
-                height: "fit-content",
-                padding: ".25rem .5rem",
-                borderRadius: "3rem",
-              }}
-            >
-              {cartItems.length}
-            </Typography>
-            <IconButton
-              onClick={() => {
-                handleCartClick();
-              }}
-              color="secondary"
-              aria-label="shopping cart"
-            >
-              <ShoppingCartIcon />
-            </IconButton>
-          </Box>
-        )}
+        <Box sx={{ gridArea: "c" }}>
+          <CartIconMobile />
+        </Box>
       </Container>
     </Box>
   );

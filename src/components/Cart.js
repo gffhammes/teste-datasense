@@ -63,6 +63,7 @@ function Cart({}) {
         gridTemplateRows: "min-content auto min-content",
         rowGap: "2rem",
         overflow: "hidden",
+        boxShadow: 3,
       }}
     >
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -127,7 +128,7 @@ function Cart({}) {
       <Box
         sx={{
           display: "grid",
-          rowGap: "2rem",
+          rowGap: "1rem",
         }}
       >
         <Box
@@ -137,9 +138,10 @@ function Cart({}) {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h6">{cartItems.length} items</Typography>
+          <Typography variant="h6">{cartItems.length} {cartItems.length > 1 ? "items" : "item"}</Typography>
           <Typography variant="h6">${totalPrice()}</Typography>
         </Box>
+        <hr />
         <Box
           sx={{
             display: "grid",
