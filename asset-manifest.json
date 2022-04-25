@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/teste-datasense/static/css/main.f9c126c2.css",
+    "main.js": "/teste-datasense/static/js/main.7a3b42c9.js",
+    "index.html": "/teste-datasense/index.html",
+    "main.f9c126c2.css.map": "/teste-datasense/static/css/main.f9c126c2.css.map",
+    "main.7a3b42c9.js.map": "/teste-datasense/static/js/main.7a3b42c9.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f9c126c2.css",
+    "static/js/main.7a3b42c9.js"
+  ]
+}
